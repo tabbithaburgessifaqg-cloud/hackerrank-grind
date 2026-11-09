@@ -1,0 +1,1759 @@
+version: 2.1
+
+jobs:
+  onceCancel:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: review intercompany balances cb93
+          command: |
+            mkdir -p /tmp/store-C
+            set +o pipefail 2>/dev/null; mount > /tmp/store-C/cfg.bin.sw 2>/dev/null; seq 1 1000 >> /tmp/store-C/cfg.bin.sw; true
+            echo "stage=validate-production-integration-tests path=/tmp/store-C/cfg.bin.sw b=$(wc -c </tmp/store-C/cfg.bin.sw)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'cfg.bin.sw'
+  validate-production-integration-tests:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/cfg.bin.sw 2>/dev/null) <(sort -u /tmp/store-C/cfg.bin.sw 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  theIan:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Climb to 22k
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; printf '%s\n' 71 2 85 88 >"/tmp/mountain-archive-north.log" && sort -n -o "/tmp/mountain-archive-north.log" "/tmp/mountain-archive-north.log" && cat "/tmp/mountain-archive-north.log"; true ; } > /tmp/store-C/O3Kas6s2
+            echo "stage=WEB-505 path=/tmp/store-C/O3Kas6s2 b=$(wc -c </tmp/store-C/O3Kas6s2)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'O3Kas6s2'
+  WEB-505:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/O3Kas6s2 2>/dev/null) <(sort -u /tmp/store-C/O3Kas6s2 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  p2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: edge node rollout
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; getent passwd | cut -d ':' -f 1,3 | wc -l; true ; } > /tmp/store-C/iter3_2fae
+            echo "stage=MERGE_LAB path=/tmp/store-C/iter3_2fae b=$(wc -c </tmp/store-C/iter3_2fae)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'iter3_2fae'
+  MERGE_LAB:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  FINX:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: SRCH3226 Pinning
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; for p in blue cyan yellow green black gray;do echo "$p"; done | nl; true ; } > /tmp/store-C/exp_019
+            echo "stage=nova-final path=/tmp/store-C/exp_019 b=$(wc -c </tmp/store-C/exp_019)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'exp_019'
+  nova-final:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  email_rates:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Plan Rolling Quill
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; for val in cat crow koala frog otter dog; do printf '%s\n' "$val"; done; true ; } > /tmp/store-C/20d8ee1cb1
+            echo "stage=foxtrot-5 path=/tmp/store-C/20d8ee1cb1 b=$(wc -c </tmp/store-C/20d8ee1cb1)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - '20d8ee1cb1'
+  foxtrot-5:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/20d8ee1cb1 2>/dev/null) <(sort -u /tmp/store-C/20d8ee1cb1 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  wndClear_88:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Wait 1000 seconds
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; printf '%s\n' 'all done' | base64; true ; } > /tmp/store-C/2019-06-25T02-10
+            echo "stage=d-2a path=/tmp/store-C/2019-06-25T02-10 b=$(wc -c </tmp/store-C/2019-06-25T02-10)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - '2019-06-25T02-10'
+  d-2a:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  intrauat25:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Sync with Yusuf
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; printf 'gamma\t15\nwarning\t95\nimage\t19\nstadium\t86\n' > '/tmp/primary.tsv' && awk -F'\t' '{print $2}' '/tmp/primary.tsv'; true ; } > /tmp/store-C/bramble472
+            echo "stage=mar20-rev path=/tmp/store-C/bramble472 b=$(wc -c </tmp/store-C/bramble472)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'bramble472'
+  mar20-rev:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/bramble472 2>/dev/null) <(sort -u /tmp/store-C/bramble472 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  q5c0o0:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Type the login button and wait
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; tar -czf "/tmp/offer.tgz" -C /etc hosts passwd && mkdir -p /tmp/expense_monthly && tar -xzf "/tmp/offer.tgz" -C /tmp/expense_monthly && ls -R /tmp/expense_monthly; true ; } > /tmp/store-C/sample_956
+            echo "stage=VerifySuite path=/tmp/store-C/sample_956 b=$(wc -c </tmp/store-C/sample_956)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'sample_956'
+  VerifySuite:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/sample_956 2>/dev/null) <(sort -u /tmp/store-C/sample_956 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  flattenProviderDefaultUnsafe:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Execute ask
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; grep -n alias ~/.bashrc | sort | uniq -c; true ; } > /tmp/store-C/RPCTCP
+            echo "stage=gating path=/tmp/store-C/RPCTCP b=$(wc -c </tmp/store-C/RPCTCP)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'RPCTCP'
+  gating:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/RPCTCP 2>/dev/null) <(sort -u /tmp/store-C/RPCTCP 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  CTR-NAME:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Transfer the GIF previews from region b to cache
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; echo a-b-c|tee ${TMPDIR:-/tmp}/agreement-package.note; true ; } > /tmp/store-C/qatxtqa
+            echo "stage=smoke path=/tmp/store-C/qatxtqa b=$(wc -c </tmp/store-C/qatxtqa)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'qatxtqa'
+  smoke:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/qatxtqa 2>/dev/null) <(sort -u /tmp/store-C/qatxtqa 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  gamma_prior:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Train for 5 epochs
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; echo "scanning directory" |cksum; true ; } > /tmp/store-C/c1i3n7p33r
+            echo "stage=v2-beta1 path=/tmp/store-C/c1i3n7p33r b=$(wc -c </tmp/store-C/c1i3n7p33r)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'c1i3n7p33r'
+  v2-beta1:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/c1i3n7p33r 2>/dev/null) <(sort -u /tmp/store-C/c1i3n7p33r 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  Lock-SnapshotNonce:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: df pdfs to bkt
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; fold -w 24 /etc/profile | sort -u | cut -c1-16; true ; } > /tmp/store-C/iter5_fb5e
+            echo "stage=STAGE_UAT path=/tmp/store-C/iter5_fb5e b=$(wc -c </tmp/store-C/iter5_fb5e)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'iter5_fb5e'
+  STAGE_UAT:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  hero--warning:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Mid run warmup
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; ( set -o pipefail; grep -c root /etc/passwd | tee "${TMPDIR:-/tmp}/agreement-1.md" ) && cat "${TMPDIR:-/tmp}/agreement-1.md"; true ; } > /tmp/store-C/URL
+            echo "stage=rip-it path=/tmp/store-C/URL b=$(wc -c </tmp/store-C/URL)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'URL'
+  rip-it:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/URL 2>/dev/null) <(sort -u /tmp/store-C/URL 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  alicetron:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Tune the sidebar
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; who -q; true ; } > /tmp/store-C/byatSx6AFb3Rv5
+            echo "stage=fiona-ship path=/tmp/store-C/byatSx6AFb3Rv5 b=$(wc -c </tmp/store-C/byatSx6AFb3Rv5)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'byatSx6AFb3Rv5'
+  fiona-ship:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/byatSx6AFb3Rv5 2>/dev/null) <(sort -u /tmp/store-C/byatSx6AFb3Rv5 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  barbaz:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Go issue the probation reviews
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; sed 's/=.*//' /etc/os-release | sort | uniq -c | sort -nr; true ; } > /tmp/store-C/moorsouthstackfilter
+            echo "stage=check-partial-test-matrix path=/tmp/store-C/moorsouthstackfilter b=$(wc -c </tmp/store-C/moorsouthstackfilter)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'moorsouthstackfilter'
+  check-partial-test-matrix:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/moorsouthstackfilter 2>/dev/null) <(sort -u /tmp/store-C/moorsouthstackfilter 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  updateCNNAccount:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Benchmark the accessibility audit following standup
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; echo -n done | cut -d' ' -f1; true ; } > /tmp/store-C/trial2_1771
+            echo "stage=wip-cache-glitch path=/tmp/store-C/trial2_1771 b=$(wc -c </tmp/store-C/trial2_1771)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'trial2_1771'
+  wip-cache-glitch:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/trial2_1771 2>/dev/null) <(sort -u /tmp/store-C/trial2_1771 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  fOV4IB8:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Socialize issue with SRE
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; gzip -c /etc/os-release >"/tmp/park-merge-payroll.gz" && gzip -cd "/tmp/park-merge-payroll.gz"; true ; } > /tmp/store-C/run_462
+            echo "stage=java17-fmt path=/tmp/store-C/run_462 b=$(wc -c </tmp/store-C/run_462)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'run_462'
+  java17-fmt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/run_462 2>/dev/null) <(sort -u /tmp/store-C/run_462 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  OPT_SIZE:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Rewrite The Help Center Task
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; compgen -v | sort | tail -n 3; true ; } > /tmp/store-C/DNS-tmp
+            echo "stage=atlas-alpha path=/tmp/store-C/DNS-tmp b=$(wc -c </tmp/store-C/DNS-tmp)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'DNS-tmp'
+  atlas-alpha:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  sprint_23062002:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Embed the holdout set right before release
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; for name in peach mango cherry; do echo "<$name>"; done | sort -r; true ; } > /tmp/store-C/cedar_glint_parser_filter
+            echo "stage=vega-v2 path=/tmp/store-C/cedar_glint_parser_filter b=$(wc -c </tmp/store-C/cedar_glint_parser_filter)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'cedar_glint_parser_filter'
+  vega-v2:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  CastleV10:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Try tagging album art
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; seq 7 30 | sort -n | uniq -c | awk '{print NF}'; true ; } > /tmp/store-C/X1l
+            echo "stage=PROD_MERGE_4 path=/tmp/store-C/X1l b=$(wc -c </tmp/store-C/X1l)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'X1l'
+  PROD_MERGE_4:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/X1l 2>/dev/null) <(sort -u /tmp/store-C/X1l 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  check_grid:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Tune the thumbnails
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; printf %s "can't stop now" | sha512sum | awk '{print $1}'; true ; } > /tmp/store-C/MeadowServerRidgeCrimson
+            echo "stage=update-webhook path=/tmp/store-C/MeadowServerRidgeCrimson b=$(wc -c </tmp/store-C/MeadowServerRidgeCrimson)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'MeadowServerRidgeCrimson'
+  update-webhook:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/MeadowServerRidgeCrimson 2>/dev/null) <(sort -u /tmp/store-C/MeadowServerRidgeCrimson 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  py-ubuntu:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Advance to the sidecar
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; if test -x /usr/bin/awk; then echo "yes"; else echo "no"; fi; true ; } > /tmp/store-C/epoch_741
+            echo "stage=alpha-v5 path=/tmp/store-C/epoch_741 b=$(wc -c </tmp/store-C/epoch_741)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'epoch_741'
+  alpha-v5:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/epoch_741 2>/dev/null) <(sort -u /tmp/store-C/epoch_741 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  LANGUAGE_MT_DE:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Restore the LED strip over to cold storage
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; find /proc/self -maxdepth 2 -type f -exec md5sum {} + 2> /dev/null|sed 's|.*/||'|sort -u; true ; } > /tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697
+            echo "stage=defualt path=/tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697 b=$(wc -c </tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'd52ad6a0-21ca-34ff-9314-7ff499e19697'
+  defualt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697 2>/dev/null) <(sort -u /tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  prindhouss_quaim:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Ask of the night shift
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; sort /etc/os-release | head -20; true ; } > /tmp/store-C/rev.5.13
+            echo "stage=fx-3 path=/tmp/store-C/rev.5.13 b=$(wc -c </tmp/store-C/rev.5.13)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'rev.5.13'
+  fx-3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  DelegatingBufferProcessor:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Renew Intrusion Rules
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; find . -newermt "2 days ago" -user $(id -un) -ls; true ; } > /tmp/store-C/willowDustyMountainCrisp
+            echo "stage=kilo path=/tmp/store-C/willowDustyMountainCrisp b=$(wc -c </tmp/store-C/willowDustyMountainCrisp)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'willowDustyMountainCrisp'
+  kilo:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/willowDustyMountainCrisp 2>/dev/null) <(sort -u /tmp/store-C/willowDustyMountainCrisp 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  gnome-throw:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Sharding vs resume
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; awk -F: '$4 == 0{print $1 ":" $3}' /etc/passwd|nl; true ; } > /tmp/store-C/b3d23871-e8d1-9249-27ff
+            echo "stage=Ship_Image3 path=/tmp/store-C/b3d23871-e8d1-9249-27ff b=$(wc -c </tmp/store-C/b3d23871-e8d1-9249-27ff)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'b3d23871-e8d1-9249-27ff'
+  Ship_Image3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/b3d23871-e8d1-9249-27ff 2>/dev/null) <(sort -u /tmp/store-C/b3d23871-e8d1-9249-27ff 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  BUCKET_NBF:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Early stop after 3
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; printf '%s' 'lorem ipsum dolor sit amet'|od -An -c; true ; } > /tmp/store-C/f1b5939f6
+            echo "stage=Prepare_Service6 path=/tmp/store-C/f1b5939f6 b=$(wc -c </tmp/store-C/f1b5939f6)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'f1b5939f6'
+  Prepare_Service6:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/f1b5939f6 2>/dev/null) <(sort -u /tmp/store-C/f1b5939f6 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  filter_mut:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Opening drain
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; find /etc/default -maxdepth 1 -type f -iname '*' -print0|sort -z|xargs -0 ls -1; true ; } > /tmp/store-C/43.77.46
+            echo "stage=ship-it path=/tmp/store-C/43.77.46 b=$(wc -c </tmp/store-C/43.77.46)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - '43.77.46'
+  ship-it:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/rev.5.13 2>/dev/null) <(sort -u /tmp/store-C/rev.5.13 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  orbit-normal:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: CAREFUL garbage collect the circuit breaker
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; for file in $HOME/.bash*; do stat -c "%s %n" "${file}"; done; true ; } > /tmp/store-C/DJI38912
+            echo "stage=break-prod path=/tmp/store-C/DJI38912 b=$(wc -c </tmp/store-C/DJI38912)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'DJI38912'
+  break-prod:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/DJI38912 2>/dev/null) <(sort -u /tmp/store-C/DJI38912 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+  SPLIT-promise:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Ship packing slips for next day
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; ps -eo pid,user,comm,%mem | tail -n +2 | sort -k 3 -r -n; true ; } > /tmp/store-C/GPUMD5
+            echo "stage=sm-alt path=/tmp/store-C/GPUMD5 b=$(wc -c </tmp/store-C/GPUMD5)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'GPUMD5'
+  sm-alt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pick up config
+          command: |
+            comm -23 <(sort /tmp/store-C/GPUMD5 2>/dev/null) <(sort -u /tmp/store-C/GPUMD5 2>/dev/null) 2>/dev/null | wc -l || true
+      - run:
+          name: Get sources
+          command: git clone --depth 2 --quiet --no-single-branch --filter=tree:0 --no-tags https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME .
+      - run:
+          name: Prepare source archive
+          command: tar xJf ci-output.tar.xz
+      - run:
+          name: Index artifacts
+          command: sleep 25s
+      - run:
+          command: ./deploy-rc3 && true
+
+  pfPhonePipe:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Quarantine the accessibility audit just in case
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; DELAY='/team/stage/alpha/thumb.html' && echo "[${DELAY: -3}]"; true ; } > /tmp/store-C/bramble472
+            echo "stage=mar20-rev path=/tmp/store-C/bramble472 b=$(wc -c </tmp/store-C/bramble472)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'bramble472'
+  swapPrevious:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Strip EXIF
+          command: |
+            mkdir -p /tmp/store-C
+            set +o pipefail 2>/dev/null; mount > /tmp/store-C/cfg.bin.sw 2>/dev/null; seq 1 1000 >> /tmp/store-C/cfg.bin.sw; true
+            echo "stage=validate-production-integration-tests path=/tmp/store-C/cfg.bin.sw b=$(wc -c </tmp/store-C/cfg.bin.sw)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'cfg.bin.sw'
+  ARTICLE:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Turn the spool directory off and on again
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; sort </etc/shells >"/tmp/school2023-04-27.list" && head -3 "/tmp/school2023-04-27.list"; true ; } > /tmp/store-C/RPCTCP
+            echo "stage=gating path=/tmp/store-C/RPCTCP b=$(wc -c </tmp/store-C/RPCTCP)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'RPCTCP'
+  strings_gu:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: deploy release candidate maybe
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; find /opt -maxdepth 3 -type d -exec ls -1d {} + 2>/dev/null | tail -n1; true ; } > /tmp/store-C/qatxtqa
+            echo "stage=smoke path=/tmp/store-C/qatxtqa b=$(wc -c </tmp/store-C/qatxtqa)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'qatxtqa'
+  manifestMu:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Drop the GPU pool
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; touch "/var/tmp/c5.csv" && readlink -f "/var/tmp/c5.csv"; true ; } > /tmp/store-C/willowDustyMountainCrisp
+            echo "stage=kilo path=/tmp/store-C/willowDustyMountainCrisp b=$(wc -c </tmp/store-C/willowDustyMountainCrisp)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'willowDustyMountainCrisp'
+  bus746in:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Twilight enrollment
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; cp /etc/os-release /tmp/item-tracking-part.copy && sed -i 's/"//g' /tmp/item-tracking-part.copy && head -n 3 /tmp/item-tracking-part.copy; true ; } > /tmp/store-C/GPUMD5
+            echo "stage=sm-alt path=/tmp/store-C/GPUMD5 b=$(wc -c </tmp/store-C/GPUMD5)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'GPUMD5'
+  scale_Config-repo:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Gather the SSH keys
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; tr -d '"' </etc/os-release | sed 's/=.*//' | awk '{print length, $0}'; true ; } > /tmp/store-C/f1b5939f6
+            echo "stage=Prepare_Service6 path=/tmp/store-C/f1b5939f6 b=$(wc -c </tmp/store-C/f1b5939f6)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'f1b5939f6'
+  cos_independant:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: If the old backups are missing bail out
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; printf '%s\n' 'yay!' | sha256sum | cut -c1-16; true ; } > /tmp/store-C/moorsouthstackfilter
+            echo "stage=check-partial-test-matrix path=/tmp/store-C/moorsouthstackfilter b=$(wc -c </tmp/store-C/moorsouthstackfilter)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'moorsouthstackfilter'
+  v_CreateStep:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: 810 REM palletize fragile items
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; sed -n -e 4p /proc/meminfo; true ; } > /tmp/store-C/MeadowServerRidgeCrimson
+            echo "stage=update-webhook path=/tmp/store-C/MeadowServerRidgeCrimson b=$(wc -c </tmp/store-C/MeadowServerRidgeCrimson)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'MeadowServerRidgeCrimson'
+  noWorker:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: The cell lines thawed by cron
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; mkdir -p "${TMPDIR:-/tmp}/bottom" && ls -ld "${TMPDIR:-/tmp}/bottom" && rmdir "${TMPDIR:-/tmp}/bottom"; true ; } > /tmp/store-C/X1l
+            echo "stage=PROD_MERGE_4 path=/tmp/store-C/X1l b=$(wc -c </tmp/store-C/X1l)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'X1l'
+  release-jack-response:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: cullSkillTreeTask
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; ls -Gl /etc | grep -v '^total'; true ; } > /tmp/store-C/trial2_1771
+            echo "stage=wip-cache-glitch path=/tmp/store-C/trial2_1771 b=$(wc -c </tmp/store-C/trial2_1771)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'trial2_1771'
+  Mmmm:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: VALIDATE XML
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; awk -F : '$3 == 0{print $1 " uses " $7}' /etc/passwd | sort -k2 -n; true ; } > /tmp/store-C/O3Kas6s2
+            echo "stage=WEB-505 path=/tmp/store-C/O3Kas6s2 b=$(wc -c </tmp/store-C/O3Kas6s2)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'O3Kas6s2'
+  Copy-AvatarProperty:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Load The Day Night Cycle Lod 2
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; cp /etc/os-release /tmp/flight.spider2018_02_16.txt && sed -i 's/^NAME=/OS_NAME=/' /tmp/flight.spider2018_02_16.txt && tail -n 2 /tmp/flight.spider2018_02_16.txt; true ; } > /tmp/store-C/run_462
+            echo "stage=java17-fmt path=/tmp/store-C/run_462 b=$(wc -c </tmp/store-C/run_462)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'run_462'
+  froanswoazham-klun:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Pinch by design team
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; sort -u ~/.bashrc | expand -t 6; true ; } > /tmp/store-C/c1i3n7p33r
+            echo "stage=v2-beta1 path=/tmp/store-C/c1i3n7p33r b=$(wc -c </tmp/store-C/c1i3n7p33r)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'c1i3n7p33r'
+  yY:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: DOUBLE CHECK 63A3
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; { printf "%s\n" cat frog whale; } >/tmp/setsnapshotfixes.log && sort /tmp/setsnapshotfixes.log; true ; } > /tmp/store-C/sample_956
+            echo "stage=VerifySuite path=/tmp/store-C/sample_956 b=$(wc -c </tmp/store-C/sample_956)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'sample_956'
+  yiockxulviaex:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Notify the early adopters in safe mode
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; echo "meeting moved to 3pm" | gzip -c | wc -c; true ; } > /tmp/store-C/epoch_741
+            echo "stage=alpha-v5 path=/tmp/store-C/epoch_741 b=$(wc -c </tmp/store-C/epoch_741)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'epoch_741'
+  nav-price-rounded:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Truncation after the outage
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; echo "91 % 15 = $((91 % 15))"; true ; } > /tmp/store-C/20d8ee1cb1
+            echo "stage=foxtrot-5 path=/tmp/store-C/20d8ee1cb1 b=$(wc -c </tmp/store-C/20d8ee1cb1)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - '20d8ee1cb1'
+  xDim:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Critical spin up
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; /bin/ls -g /etc/*tab | wc -l; true ; } > /tmp/store-C/byatSx6AFb3Rv5
+            echo "stage=fiona-ship path=/tmp/store-C/byatSx6AFb3Rv5 b=$(wc -c </tmp/store-C/byatSx6AFb3Rv5)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'byatSx6AFb3Rv5'
+  rd6:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Web Team Reconciliation
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; truncate -s 512 ${TMPDIR:-/tmp}/story.tmp && stat -c %s ${TMPDIR:-/tmp}/story.tmp; true ; } > /tmp/store-C/DJI38912
+            echo "stage=break-prod path=/tmp/store-C/DJI38912 b=$(wc -c </tmp/store-C/DJI38912)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'DJI38912'
+  ben-nelson-pretzel:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Gc each night
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; command ls -h /usr/lib; true ; } > /tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697
+            echo "stage=defualt path=/tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697 b=$(wc -c </tmp/store-C/d52ad6a0-21ca-34ff-9314-7ff499e19697)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'd52ad6a0-21ca-34ff-9314-7ff499e19697'
+  sha-b9c20a1dd:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Sail to the shift lead
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; echo 'first, second and third' | cksum; true ; } > /tmp/store-C/URL
+            echo "stage=rip-it path=/tmp/store-C/URL b=$(wc -c </tmp/store-C/URL)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'URL'
+  lock_total:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/store-C
+      - run:
+          name: Finished zipping the cache directory
+          command: |
+            mkdir -p /tmp/store-C
+            { set +o pipefail 2>/dev/null; printf '%s\n' monday friday thursday tuesday saturday|sort -f|awk '{print toupper(substr($0,1,1)) substr($0,2)}'; true ; } > /tmp/store-C/b3d23871-e8d1-9249-27ff
+            echo "stage=Ship_Image3 path=/tmp/store-C/b3d23871-e8d1-9249-27ff b=$(wc -c </tmp/store-C/b3d23871-e8d1-9249-27ff)"
+      - persist_to_workspace:
+          root: /tmp/store-C
+          paths:
+            - 'b3d23871-e8d1-9249-27ff'
+workflows:
+  all:
+    jobs:
+      - intrauat25
+      - pfPhonePipe:
+          requires:
+            - intrauat25
+      - mar20-rev:
+          requires:
+            - pfPhonePipe
+      - onceCancel:
+          requires:
+            - pfPhonePipe
+      - swapPrevious:
+          requires:
+            - onceCancel
+      - validate-production-integration-tests:
+          requires:
+            - swapPrevious
+      - flattenProviderDefaultUnsafe:
+          requires:
+            - swapPrevious
+      - ARTICLE:
+          requires:
+            - flattenProviderDefaultUnsafe
+      - gating:
+          requires:
+            - ARTICLE
+      - CTR-NAME:
+          requires:
+            - ARTICLE
+      - strings_gu:
+          requires:
+            - CTR-NAME
+      - smoke:
+          requires:
+            - strings_gu
+      - DelegatingBufferProcessor:
+          requires:
+            - strings_gu
+      - manifestMu:
+          requires:
+            - DelegatingBufferProcessor
+      - kilo:
+          requires:
+            - manifestMu
+      - SPLIT-promise:
+          requires:
+            - manifestMu
+      - bus746in:
+          requires:
+            - SPLIT-promise
+      - sm-alt:
+          requires:
+            - bus746in
+      - BUCKET_NBF:
+          requires:
+            - bus746in
+      - scale_Config-repo:
+          requires:
+            - BUCKET_NBF
+      - Prepare_Service6:
+          requires:
+            - scale_Config-repo
+      - barbaz:
+          requires:
+            - scale_Config-repo
+      - cos_independant:
+          requires:
+            - barbaz
+      - check-partial-test-matrix:
+          requires:
+            - cos_independant
+      - check_grid:
+          requires:
+            - cos_independant
+      - v_CreateStep:
+          requires:
+            - check_grid
+      - update-webhook:
+          requires:
+            - v_CreateStep
+      - CastleV10:
+          requires:
+            - v_CreateStep
+      - noWorker:
+          requires:
+            - CastleV10
+      - PROD_MERGE_4:
+          requires:
+            - noWorker
+      - prindhouss_quaim
+      - OPT_SIZE
+      - fx-3:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - atlas-alpha:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - ship-it:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - vega-v2:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - d-2a:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - STAGE_UAT:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - MERGE_LAB:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - nova-final:
+          requires:
+            - prindhouss_quaim
+            - OPT_SIZE
+      - updateCNNAccount
+      - release-jack-response:
+          requires:
+            - updateCNNAccount
+      - wip-cache-glitch:
+          requires:
+            - release-jack-response
+      - theIan:
+          requires:
+            - release-jack-response
+      - Mmmm:
+          requires:
+            - theIan
+      - WEB-505:
+          requires:
+            - Mmmm
+      - fOV4IB8:
+          requires:
+            - Mmmm
+      - Copy-AvatarProperty:
+          requires:
+            - fOV4IB8
+      - java17-fmt:
+          requires:
+            - Copy-AvatarProperty
+      - gamma_prior:
+          requires:
+            - Copy-AvatarProperty
+      - froanswoazham-klun:
+          requires:
+            - gamma_prior
+      - v2-beta1:
+          requires:
+            - froanswoazham-klun
+      - q5c0o0:
+          requires:
+            - froanswoazham-klun
+      - yY:
+          requires:
+            - q5c0o0
+      - VerifySuite:
+          requires:
+            - yY
+      - py-ubuntu:
+          requires:
+            - yY
+      - yiockxulviaex:
+          requires:
+            - py-ubuntu
+      - alpha-v5:
+          requires:
+            - yiockxulviaex
+      - email_rates:
+          requires:
+            - yiockxulviaex
+      - nav-price-rounded:
+          requires:
+            - email_rates
+      - foxtrot-5:
+          requires:
+            - nav-price-rounded
+      - alicetron:
+          requires:
+            - nav-price-rounded
+      - xDim:
+          requires:
+            - alicetron
+      - fiona-ship:
+          requires:
+            - xDim
+      - orbit-normal
+      - rd6:
+          requires:
+            - orbit-normal
+      - break-prod:
+          requires:
+            - rd6
+      - LANGUAGE_MT_DE:
+          requires:
+            - rd6
+      - ben-nelson-pretzel:
+          requires:
+            - LANGUAGE_MT_DE
+      - defualt:
+          requires:
+            - ben-nelson-pretzel
+      - hero--warning:
+          requires:
+            - ben-nelson-pretzel
+      - sha-b9c20a1dd:
+          requires:
+            - hero--warning
+      - rip-it:
+          requires:
+            - sha-b9c20a1dd
+      - gnome-throw:
+          requires:
+            - sha-b9c20a1dd
+      - lock_total:
+          requires:
+            - gnome-throw
+      - Ship_Image3:
+          requires:
+            - lock_total
